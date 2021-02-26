@@ -9,14 +9,6 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-var sqlCommands = {
-  channels: {}
-}
-
-function messageIsSelf(msg) {
-  return msg.author.id == client.user.id
-}
-
 function addChannelMapping(msg, voiceId, textId, guild) {
   if (!voiceId || !textId || !parseInt(voiceId) || !parseInt(textId)) {
     msg.channel.send("Expected format: ``/sl.add <voiceChannelId> <textChannelId>``");
