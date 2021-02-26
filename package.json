@@ -1,0 +1,12 @@
+{
+  "name": "speechless",
+  "version": "0.1.0",
+  "description": "A discord bot to hide no-voice channels except when users join voice",
+  "main": "speechless.js",
+  "author": "Kazenone Alagar",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "firebase-admin": "^9.5.0",
+    "jquery": "^3.4.1"
+  }
+}
