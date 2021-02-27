@@ -1,7 +1,7 @@
 # Speechless
 A Discord bot to allow text channels to be hidden until a user joins a related voice channel, and removed when the user leaves the voice channel.
 
-![Show/Hide channels as you join](https://i.gyazo.com/6e8b8408fc12a9750286e15ce9f61a5e.gif)
+![Show/Hide channels as you join](https://i.gyazo.com/7eb800853fe2e5d26637d2c82080bd3e.gif)
 
 *Show/Hide channels as you join*
 
