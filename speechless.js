@@ -155,11 +155,11 @@ client.on('message', msg => {
     addChannelMapping(msg, components[1], components[2], guild);
   } else if (command === '/sl.remove') {
     removeChannelMapping(msg, components[1], components[2], guild);
-  } else if (command === '/sl.help') {
-    printHelp(msg);
   } else if (command === '/sl.report') {
     var alertUser = client.users.resolve('181499334855098379');
     alertUser.createDM().then(c => c.send(`Bug report (${msg.author.tag}): ${content}`));
+  } else {
+    printHelp(msg);
   }
 });
 
