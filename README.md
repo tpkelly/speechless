@@ -1,13 +1,20 @@
-# Speechless bot
-A Discord bot to allow text channels to be hidden until a user joins a related voice channel, and removed when the user leaves the voice channel
+# Speechless
+A Discord bot to allow text channels to be hidden until a user joins a related voice channel, and removed when the user leaves the voice channel.
+
+![Show/Hide channels as you join](https://i.gyazo.com/6e8b8408fc12a9750286e15ce9f61a5e.gif)
+
+*Show/Hide channels as you join*
+
+* Great help for those with robotic voices on bad connections
+* Lets users get more involved in voice chat when they have to stay muted
+* Keeps the server clean, while still allowing the channels to be moderated 
 
 ## Setup
-Commands must be run by users with the Manage Channels permission.
-Any users with a role giving them 'View Channel' on the text channel will be unaffected.
-This can be set to a Moderator role to still moderate the channel without having to be in the voice call at the time.
-Text channel will need to have permissions for regular users removed to allow the bot to show the channel to them when they join the related Voice channel.
+- Commands must be run by users with the Manage Channels permission.
+- Target text channel should have 'View Channel' permission denied for most users removed except for Moderators/Admins.
+- Bot must have all permissions as listed below
 
-Bot itself requires:
+# Required Bot Permissions
 - Server-wide permissions of Manage Channels (allow settings to be changed on channels)
 - Read/Send Messages (to respond to commands)
 - View Channel on any channels you intend to use this for
