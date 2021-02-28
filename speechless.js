@@ -9,6 +9,8 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+/** Commands **/
+
 function rolePermissionsForChannel(channel) {
   return channel
     .permissionOverwrites
@@ -19,6 +21,10 @@ function rolePermissionsForChannel(channel) {
 }
 
 function addChannelMapping(msg, voiceId, textId, guild) {
+  if (/<#\d{18}>/.test(textId)) {
+    textId = textId.substring(2, 20);
+  }
+
   if (!voiceId || !textId || !parseInt(voiceId) || !parseInt(textId)) {
     msg.channel.send("Expected format: ``/sl.add <voiceChannelId> <textChannelId>``");
     return;
@@ -75,11 +81,30 @@ We recommend removing the View Channel permission on #${textChannel.name} for al
   }).then(() => msg.channel.send(`Mapping voice channel '${voiceChannel.name}' -> <#${textId}>`));
 }
 
-function removeChannelMapping(msg, voiceId, textId, guild) {
-  var voiceChannel = guild.channels.resolve(voiceId)
+function removeChannelMapping(msg, voiceId, guild) {
   db.collection(guild.id).doc(voiceId)
     .delete()
-    .then(() => msg.channel.send(`Removing channel map '${voiceChannel.name}' -> <#${textId}>`));
+    .then(() => msg.channel.send(`Removing channel map for '<#${voiceId}>'`));
+}
+
+function listChannelMappings(msg, guild) {
+  db.collection(guild.id)
+    .listDocuments()
+    .then(docs => {
+      if (docs.length == 0) {
+        msg.channel.send(`No channel mappings configured`);
+        return
+      }
+      
+      msg.channel.send(`Currently mapped channels:`);
+      docs.forEach(doc => {
+        doc.get().then(d => {
+          var voiceChannelId = d.get('voiceChannelId');
+          var textChannelId = d.get('textChannelId');
+          msg.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}>`)
+        })
+      })
+    });
 }
 
 function printHelp(msg) {
@@ -99,7 +124,8 @@ Bot itself requires:
 # Commands:
 \`/sl.help\`: Display these messages
 \`/sl.add <voiceId> <textId>\`: Enable a text channel as a no-voice text channel for a voice channel
-\`/sl.remove <voiceId> <textId>\`: Remove the mapping between a no-voice text channel and a voice channel
+\`/sl.remove <voiceId>\`: Remove the mapping between a no-voice text channel and a voice channel
+\`/sl.list\`: List out all current mappings in this server
 \`/sl.report\`: Send a DM to the creator of the bot about an issue or feedback`);
 }
 
@@ -113,8 +139,8 @@ function allowUserChannelAccess(guild, channelId, userId) {
   };
   var permissions = noVoiceChannel.permissionOverwrites.set(userId, permission);
 
-  noVoiceChannel.overwritePermissions(permissions, `Adding user to ${noVoiceChannel.name} channel`)
-    .then(() => console.log(`Adding user to #${noVoiceChannel.name} channel`))
+  noVoiceChannel.overwritePermissions(permissions, `Adding user to <#${channelId}>`)
+    .then(() => console.log(`Adding user to <#${channelId}>`))
     .catch(function(e) { console.log(e) })
 }
 
@@ -123,10 +149,12 @@ function removeUserChannelAccess(guild, channelId, userId) {
   var permissions = noVoiceChannel.permissionOverwrites;
   permissions.delete(userId);
 
-  noVoiceChannel.overwritePermissions(permissions, `Removing user from ${noVoiceChannel.name} channel`)
-    .then(`Removing user from #${noVoiceChannel.name} channel`)
+  noVoiceChannel.overwritePermissions(permissions, `Removing user from <#${channelId}>`)
+    .then(`Removing user from <#${channelId}>`)
     .catch(function(e) { console.log(e) })
 }
+
+/** Events Handlers**/
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag} @ ${new Date().toLocaleString()}!`);
@@ -154,7 +182,9 @@ client.on('message', msg => {
   if (command === '/sl.add') {
     addChannelMapping(msg, components[1], components[2], guild);
   } else if (command === '/sl.remove') {
-    removeChannelMapping(msg, components[1], components[2], guild);
+    removeChannelMapping(msg, components[1], guild);
+  } else if (command === '/sl.list') {
+    listChannelMappings(msg, guild);
   } else if (command === '/sl.report') {
     var alertUser = client.users.resolve('181499334855098379');
     alertUser.createDM().then(c => c.send(`Bug report (${msg.author.tag}): ${content}`));
