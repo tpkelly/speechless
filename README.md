@@ -9,6 +9,8 @@ A Discord bot to allow text channels to be hidden until a user joins a related v
 * Lets users get more involved in voice chat when they have to stay muted
 * Keeps the server clean, while still allowing the channels to be moderated 
 
+[Invite to your server](https://discordapp.com/oauth2/authorize?client_id=814716537109217311&permissions=3088&scope=bot)
+
 ## Setup
 - Commands must be run by users with the Manage Channels permission.
 - Target text channel should have 'View Channel' permission denied for most users removed except for Moderators/Admins.
