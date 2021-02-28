@@ -14,7 +14,7 @@ A Discord bot to allow text channels to be hidden until a user joins a related v
 - Target text channel should have 'View Channel' permission denied for most users removed except for Moderators/Admins.
 - Bot must have all permissions as listed below
 
-# Required Bot Permissions
+## Required Bot Permissions
 - Server-wide permissions of Manage Channels (allow settings to be changed on channels)
 - Read/Send Messages (to respond to commands)
 - View Channel on any channels you intend to use this for
