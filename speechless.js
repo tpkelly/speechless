@@ -124,7 +124,7 @@ Bot itself requires:
 # Commands:
 \`/sl.help\`: Display these messages
 \`/sl.add <voiceId> <textId>\`: Enable a text channel as a no-voice text channel for a voice channel
-\`/sl.remove <voiceId>\`: Remove the mapping between a no-voice text channel and a voice channel
+\`/sl.remove <voiceId>\`: Remove the mapping on a voice channel
 \`/sl.list\`: List out all current mappings in this server
 \`/sl.report\`: Send a DM to the creator of the bot about an issue or feedback`);
 }

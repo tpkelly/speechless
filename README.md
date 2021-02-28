@@ -23,5 +23,6 @@ A Discord bot to allow text channels to be hidden until a user joins a related v
 ## Commands
 - /sl.help: Display this message
 - /sl.add <voiceId> <textId>: Enable a text channel as a no-voice text channel for a voice channel
-- /sl.remove <voiceId> <textId>: Remove the mapping between a no-voice text channel and a voice channel
+- /sl.remove <voiceId>: Remove the mapping on a voice channel
+- /sl.list: List out all current mappings in the current server
 - /sl.report: Send a DM to the creator of the bot about an issue or feedback
