@@ -158,7 +158,7 @@ function removeUserChannelAccess(guild, channelId, userId) {
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag} @ ${new Date().toLocaleString()}!`);
-  client.user.setActivity("");
+  client.user.setActivity("/sl.help to get started");
 });
 
 client.on('message', msg => {
