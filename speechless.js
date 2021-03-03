@@ -138,12 +138,6 @@ Text channel will need to have permissions for regular users removed to allow th
 **Github**:  <https://github.com/tpkelly/speechless>
 
 Bot Permissions Check:`;
-/*
- - Server-wide permissions of Manage Channels (allow settings to be changed on channels)
-- Read/Send Messages (to respond to commands)
-- View Channel on any channels you intend to use this for
-- Either server-wide Manage Roles, or channel-specific Manage Permissions to add/remove users from channels`
-*/
 
   if (targetChannel) {
     if (/<#\d{18}>/.test(targetChannel)) {
@@ -163,13 +157,12 @@ ${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Ser
 ${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Permissions (Channel)`;
   }
   else {
-    var hasManageChannels = msg.guild.me.hasPermission(Permissions.FLAGS.MANAGE_CHANNELS);
     var hasSendMessages = msg.guild.me.hasPermission(Permissions.FLAGS.SEND_MESSAGES);
     var hasManagePermissions = msg.guild.me.hasPermission(Permissions.FLAGS.MANAGE_ROLES);
     
         supportMessage += `
 ${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Server)
-${hasManageChannels ? ':white_check_mark:' : ':no_entry_sign:'} Manage Roles (Server)
+${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Roles (Server)
 
 To check a specific channel, again with /sl.support <channel>`;
   }
