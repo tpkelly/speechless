@@ -116,7 +116,6 @@ Text channel will need to have permissions for regular users removed to allow th
 More details available on <https://github.com/tpkelly/speechless>.
 
 Bot itself requires:
-- Server-wide permissions of Manage Channels (allow settings to be changed on channels)
 - Read/Send Messages (to respond to commands)
 - View Channel on any channels you intend to use this for
 - Either server-wide Manage Roles, or channel-specific Manage Permissions to add/remove users from channels
@@ -126,7 +125,57 @@ Bot itself requires:
 \`/sl.add <voiceId> <textId>\`: Enable a text channel as a no-voice text channel for a voice channel
 \`/sl.remove <voiceId>\`: Remove the mapping on a voice channel
 \`/sl.list\`: List out all current mappings in this server
-\`/sl.report\`: Send a DM to the creator of the bot about an issue or feedback`);
+\`/sl.support\`: Display support information`);
+}
+
+function printSupport(msg, targetChannel) {
+  var supportMessage = `== Speechless support ==
+Commands must be run by users with the Manage Channels permission.
+Any users with a role giving them 'View Channel' on the text channel will be unaffected.
+This can be set to a Moderator role to still moderate the channel without having to be in the voice call at the time.
+Text channel will need to have permissions for regular users removed to allow the bot to show the channel to them when they join the related Voice channel.
+
+**Support**: <https://discord.gg/yb287x2ZnW>
+**Github**:  <https://github.com/tpkelly/speechless>
+
+Bot Permissions Check:`;
+/*
+ - Server-wide permissions of Manage Channels (allow settings to be changed on channels)
+- Read/Send Messages (to respond to commands)
+- View Channel on any channels you intend to use this for
+- Either server-wide Manage Roles, or channel-specific Manage Permissions to add/remove users from channels`
+*/
+
+  if (targetChannel) {
+    if (/<#\d{18}>/.test(targetChannel)) {
+      targetChannel = targetChannel.substring(2, 20);
+    }
+    
+    var textChannel = msg.guild.channels.resolve(targetChannel)
+    var textChannelPermissions = textChannel.permissionsFor(client.user).bitfield;
+    
+    var hasReadMessages = (textChannelPermissions & Permissions.FLAGS.VIEW_CHANNEL) > 0;
+    var hasSendMessages = msg.guild.me.hasPermission(Permissions.FLAGS.SEND_MESSAGES);
+    var hasManagePermissions = (textChannelPermissions & Permissions.FLAGS.MANAGE_ROLES) > 0;
+    
+    supportMessage += `
+${hasReadMessages ? ':white_check_mark:' : ':no_entry_sign:'} Read Messages (Channel)
+${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Server)
+${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Permissions (Channel)`;
+  }
+  else {
+    var hasManageChannels = msg.guild.me.hasPermission(Permissions.FLAGS.MANAGE_CHANNELS);
+    var hasSendMessages = msg.guild.me.hasPermission(Permissions.FLAGS.SEND_MESSAGES);
+    var hasManagePermissions = msg.guild.me.hasPermission(Permissions.FLAGS.MANAGE_ROLES);
+    
+        supportMessage += `
+${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Server)
+${hasManageChannels ? ':white_check_mark:' : ':no_entry_sign:'} Manage Roles (Server)
+
+To check a specific channel, again with /sl.support <channel>`;
+  }
+
+  msg.channel.send(supportMessage);
 }
 
 function allowUserChannelAccess(guild, channelId, userId) {
@@ -185,9 +234,8 @@ client.on('message', msg => {
     removeChannelMapping(msg, components[1], guild);
   } else if (command === '/sl.list') {
     listChannelMappings(msg, guild);
-  } else if (command === '/sl.report') {
-    var alertUser = client.users.resolve('181499334855098379');
-    alertUser.createDM().then(c => c.send(`Bug report (${msg.author.tag}): ${content}`));
+  } else if (command === '/sl.support') {
+    printSupport(msg, components[1])
   } else {
     printHelp(msg);
   }
