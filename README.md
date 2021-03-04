@@ -1,3 +1,6 @@
+[![Top.gg](https://top.gg/api/widget/status/814716537109217311.svg)](https://top.gg/bot/814716537109217311)
+[![Top.gg](https://top.gg/api/widget/servers/814716537109217311.svg)](https://top.gg/bot/814716537109217311)
+
 # Speechless
 A Discord bot to allow text channels to be hidden until a user joins a related voice channel, and removed when the user leaves the voice channel.
 
