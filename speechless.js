@@ -1,5 +1,5 @@
-const { Client, Structures, Permissions } = require('discord.js');
-const client = new Client();
+const { Client, Collection, Structures, Permissions } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES]});
 const auth = require('./auth.speechless.json');
 const admin = require('firebase-admin');
 
@@ -173,94 +173,34 @@ To check a specific channel, again with /sl.support <channel>`;
   msg.channel.send(supportMessage);
 }
 
-function allowUserChannelAccess(guild, channelId, userId) {
-  var noVoiceChannel = guild.channels.resolve(channelId)
-  var permission = {
-    id: userId,
-    type: 'member',
-    allow: Permissions.FLAGS.VIEW_CHANNEL | Permissions.FLAGS.SEND_MESSAGES | Permissions.FLAGS.READ_MESSAGE_HISTORY,
-    deny: 0
-  };
-  var permissions = noVoiceChannel.permissionOverwrites.set(userId, permission);
-
-  noVoiceChannel.overwritePermissions(permissions, `Adding user to <#${channelId}>`)
-    .then(() => console.log(`Adding user to <#${channelId}>`))
-    .catch(function(e) { console.log(e) })
-}
-
-function removeUserChannelAccess(guild, channelId, userId) {
-  var noVoiceChannel = guild.channels.resolve(channelId)
-  var permissions = noVoiceChannel.permissionOverwrites;
-  permissions.delete(userId);
-
-  noVoiceChannel.overwritePermissions(permissions, `Removing user from <#${channelId}>`)
-    .then(`Removing user from <#${channelId}>`)
-    .catch(function(e) { console.log(e) })
-}
-
 /** Events Handlers**/
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag} @ ${new Date().toLocaleString()}!`);
   client.user.setActivity("/sl.help to get started");
-});
+  
+  // Register commands
+  client.commands = new Collection();
+  const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+  
+  for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
+  }
+  
+  // Register event handlers
+  client.events = new Collection();
+  const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+  
+  for (const file of eventFiles) {
+    const eventLogic = require(`./events/${file}`);
+    client.events.set(eventLogic.name, eventLogic);
+  }
+  
+  client.on('interactionCreate', (interaction) => client.events.get('interactionCreate').execute(interaction, client));
+  client.on('messageCreate', (message) => client.events.get('messageCreate').execute(message, client));
+  client.on('voiceStateUpdate', client.events.get('voiceStateUpdate').execute);
 
-client.on('message', msg => {
-  var content = msg.content.toLowerCase();
-  
-  if (!content.startsWith('/sl.')) {
-    return;
-  }
-  
-  // Check for Manage Channels permission
-  var bitfield = msg.channel.permissionsFor(msg.author).bitfield
-  if ((bitfield & Permissions.FLAGS.MANAGE_CHANNELS) == 0) {
-    msg.channel.send(`You must have the Manage Channels permission to run this command`);
-    return;
-  }
-  
-  var components = content.split(' ');
-  var command = components[0];
-  var guild = msg.channel.guild;
-  
-  if (command === '/sl.add') {
-    addChannelMapping(msg, components[1], components[2], guild);
-  } else if (command === '/sl.remove') {
-    removeChannelMapping(msg, components[1], guild);
-  } else if (command === '/sl.list') {
-    listChannelMappings(msg, guild);
-  } else if (command === '/sl.support') {
-    printSupport(msg, components[1])
-  } else {
-    printHelp(msg);
-  }
-});
-
-client.on('voiceStateUpdate', async (oldState, newState) => {
-  // Unrelated activity
-  if (oldState.channelID == newState.channelID) {
-    return;
-  }
-
-  // Member left voice channel
-  if (oldState.channelID) {
-    console.log(`Leaving channel ${oldState.channelID}`)
-    var noVoiceChannelId = await db.collection(newState.guild.id).doc(oldState.channelID).get();
-    if (noVoiceChannelId.exists) {
-      var data = noVoiceChannelId.data()
-      removeUserChannelAccess(oldState.guild, data.textChannelId, oldState.id)
-    }
-  }
-  
-  // Member joined voice channel
-  if (newState.channelID) {
-    console.log(`Joining channel ${newState.channelID}`)
-    var noVoiceChannelId = await db.collection(newState.guild.id).doc(newState.channelID).get();
-    if (noVoiceChannelId.exists) {
-      var data = noVoiceChannelId.data()
-      allowUserChannelAccess(newState.guild, data.textChannelId, newState.id)
-    }
-  }
+  console.log(`Logged in as ${client.user.tag} @ ${new Date().toLocaleString()}!`);
 });
 
 client.login(auth.discord);
