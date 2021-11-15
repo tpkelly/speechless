@@ -91,26 +91,6 @@ function removeChannelMapping(msg, voiceId, guild) {
     .then(() => msg.channel.send(`Removing channel map for '<#${voiceId}>'`));
 }
 
-function listChannelMappings(msg, guild) {
-  db.collection(guild.id)
-    .listDocuments()
-    .then(docs => {
-      if (docs.length == 0) {
-        msg.channel.send(`No channel mappings configured`);
-        return
-      }
-      
-      msg.channel.send(`Currently mapped channels:`);
-      docs.forEach(doc => {
-        doc.get().then(d => {
-          var voiceChannelId = d.get('voiceChannelId');
-          var textChannelId = d.get('textChannelId');
-          msg.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}>`)
-        })
-      })
-    });
-}
-
 /** Events Handlers**/
 
 client.on('ready', () => {
