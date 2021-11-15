@@ -150,11 +150,13 @@ Bot Permissions Check:`;
     var hasReadMessages = (textChannelPermissions & Permissions.FLAGS.VIEW_CHANNEL) > 0;
     var hasSendMessages = msg.guild.me.hasPermission(Permissions.FLAGS.SEND_MESSAGES);
     var hasManagePermissions = (textChannelPermissions & Permissions.FLAGS.MANAGE_ROLES) > 0;
+    var hasManageChannels = (textChannelPermissions & Permissions.FLAGS.MANAGE_CHANNELS) > 0;
     
     supportMessage += `
 ${hasReadMessages ? ':white_check_mark:' : ':no_entry_sign:'} Read Messages (Channel)
 ${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Server)
-${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Permissions (Channel)`;
+${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Permissions (Channel)
+${hasManageChannels ? ':white_check_mark:' : ':no_entry_sign:'} Manage Channels (Server)`;
   }
   else {
     var hasSendMessages = msg.guild.me.hasPermission(Permissions.FLAGS.SEND_MESSAGES);
@@ -163,6 +165,7 @@ ${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Permis
         supportMessage += `
 ${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Server)
 ${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Roles (Server)
+${hasManageChannels ? ':white_check_mark:' : ':no_entry_sign:'} Manage Channels (Server)
 
 To check a specific channel, again with /sl.support <channel>`;
   }
