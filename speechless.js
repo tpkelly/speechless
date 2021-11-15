@@ -1,7 +1,11 @@
-const { Client, Collection, Structures, Permissions } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES]});
+const { Client, Collection, Intents, Permissions } = require('discord.js');
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
+  partials: ['MESSAGE', 'CHANNEL']
+});
 const auth = require('./auth.speechless.json');
 const admin = require('firebase-admin');
+const fs = require('fs');
 
 admin.initializeApp({
   credential: admin.credential.cert(auth.firebase)

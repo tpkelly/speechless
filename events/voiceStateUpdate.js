@@ -1,4 +1,6 @@
 const { Permissions } = require('discord.js');
+const admin = require('firebase-admin');
+const db = admin.firestore();
 
 function allowUserChannelAccess(guild, channelId, userId) {
   var noVoiceChannel = guild.channels.resolve(noVoiceChannelId)
@@ -23,7 +25,7 @@ function removeUserChannelAccess(guild, channelId, userId) {
 
 module.exports = {
   name: 'voiceStateUpdate',
-  execute(oldState, newState) {
+  execute: async (oldState, newState) => {
     // Unrelated activity
     if (oldState.channelId == newState.channelId) {
       return;

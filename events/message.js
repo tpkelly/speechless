@@ -1,14 +1,9 @@
 const { Permissions } = require('discord.js');
-const msgConst = require('../messageConsts.js');
-const beta = require('../beta.js');
-const common = require('../common.js');
 
 module.exports = {
   name: 'messageCreate',
   execute: async (msg, client) => {
-    var content = msg.content.toLowerCase();
-    
-    if (!content.startsWith('/sl.') || msg.author.bot) {
+    if (!msg.content.toLowerCase().startsWith('/sl.') || msg.author.bot) {
       return;
     }
     
@@ -19,10 +14,10 @@ module.exports = {
       return;
     }
     
-    var components = content.split(' ');
-    var command = components.shift();
+    var args = msg.content.slice(4).toLowerCase().split(' ');
+    var command = args.shift();
     //var guild = msg.channel.guild;
-    
+   
     if (!client.commands.has(command)) {
       command = 'help';
     }
