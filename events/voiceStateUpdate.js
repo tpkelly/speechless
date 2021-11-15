@@ -19,7 +19,7 @@ function removeUserChannelAccess(guild, channelId, userId) {
   var permissions = noVoiceChannel.permissionOverwrites;
   permissions.delete(userId);
 
-  noVoiceChannel.permissionOverwrites.delete(oldState.id, `Removing user from ${noVoiceChannel.name} channel`)
+  noVoiceChannel.permissionOverwrites.delete(userId, `Removing user from ${noVoiceChannel.name} channel`)
     .catch(function(e) { console.log(e) })
 }
 

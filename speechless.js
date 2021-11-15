@@ -85,12 +85,6 @@ We recommend removing the View Channel permission on #${textChannel.name} for al
   }).then(() => msg.channel.send(`Mapping voice channel '${voiceChannel.name}' -> <#${textId}>`));
 }
 
-function removeChannelMapping(msg, voiceId, guild) {
-  db.collection(guild.id).doc(voiceId)
-    .delete()
-    .then(() => msg.channel.send(`Removing channel map for '<#${voiceId}>'`));
-}
-
 /** Events Handlers**/
 
 client.on('ready', () => {
