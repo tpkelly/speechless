@@ -1,6 +1,6 @@
 const { Permissions } = require('discord.js');
 
-function printSupport(guild, targetChannel) {
+function printSupport(guild, targetChannel, prefix) {
   var supportMessage = `== Speechless support ==
 Commands must be run by users with the Manage Channels permission.
 Any users with a role giving them 'View Channel' on the text channel will be unaffected.
@@ -35,7 +35,7 @@ ${hasSendMessages ? ':white_check_mark:' : ':no_entry_sign:'} Send Messages (Ser
 ${hasManagePermissions ? ':white_check_mark:' : ':no_entry_sign:'} Manage Roles (Server)
 ${hasManageChannels ? ':white_check_mark:' : ':no_entry_sign:'} Manage Channels (Server)
 
-To check a specific channel, again with /sl.support <channel>`;
+To check a specific channel, again with /${prefix}support <channel>`;
   }
 
   return supportMessage;
@@ -55,10 +55,10 @@ module.exports = {
       textChannel = msg.guild.channels.resolve(targetChannel)
     }
     
-    msg.channel.send(printSupport(msg.guild, textChannel));
+    msg.channel.send(printSupport(msg.guild, textChannel, 'sl.'));
   },
   executeInteraction: async(interaction, client) => {
-    var targetChannel = interaction.options.getChannel('targetChannel');
-    interaction.editReply({ content: printSupport(interaction.guild, targetChannel) });
+    var targetChannel = interaction.options.getChannel('targetchannel');
+    interaction.editReply({ content: printSupport(interaction.guild, targetChannel, '') });
   }
 };
