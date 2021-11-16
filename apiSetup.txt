@@ -13,11 +13,11 @@
     },
     {
         "name": "help",
-        "description": "Display help information about how to use this bot",
+        "description": "Display help information about how to use this bot"
     },
     {
         "name": "list",
-        "description": "List all currently configured channels",
+        "description": "List all currently configured channels"
     },
     {
         "name": "add",
