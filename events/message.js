@@ -1,4 +1,5 @@
 const { Permissions } = require('discord.js');
+const common = require('../common.js');
 
 module.exports = {
   name: 'messageCreate',
@@ -16,7 +17,6 @@ module.exports = {
     
     var args = msg.content.slice(4).toLowerCase().split(' ');
     var command = args.shift();
-    //var guild = msg.channel.guild;
    
     if (!client.commands.has(command)) {
       command = 'help';
@@ -29,24 +29,10 @@ module.exports = {
     
     // Execute command by name from the 'commands/{command.name}.js' file
     try {
-      msg.channel.send(`**Did you know we now have slash commands? Type "/" to see an autocomplete list of all commands. They are much easier to use than remembering all the bot commands!**`)
+      msg.channel.send({ embeds: [common.styledEmbed('Slash Commands', `Did you know we now have slash commands?\n\nType "/" to see an autocomplete list of all commands. They are much easier to use than remembering all the bot commands!\n\nNB: If the commands are not immediately showing up, you may need to [reinvite with the application.commands scope](https://discordapp.com/oauth2/authorize?client_id=814716537109217311&permissions=268504096&scope=bot).`)] });
       messageCommand.execute(msg, args);
     } catch (ex) {
       console.error(ex);
     }
-    
-    /*
-    if (command === '/sl.add') {
-      addChannelMapping(msg, components[1], components[2], guild);
-    } else if (command === '/sl.remove') {
-      removeChannelMapping(msg, components[1], guild);
-    } else if (command === '/sl.list') {
-      listChannelMappings(msg, guild);
-    } else if (command === '/sl.support') {
-      printSupport(msg, components[1])
-    } else {
-      printHelp(msg);
-    }
-    */
   }
 }
