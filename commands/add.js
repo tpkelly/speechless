@@ -12,6 +12,46 @@ function rolePermissionsForChannel(channel) {
     .filter(p => p == true)
 }
 
+function mapChannels(voiceChannel, textChannel, messageChannel, replyFunc) {
+  if (!textChannel.viewable) {
+    replyFunc(`I am missing 'View Channel' permissions on <#${textId}>.`);
+    return;
+  }
+  
+  // Check for Manage Channels permission
+  var bitfield = textChannel.guild.me.permissionsIn(textChannel).bitfield
+  if ((bitfield & Permissions.FLAGS.MANAGE_ROLES) == 0) {
+    replyFunc(`Bot must have the Manage Permissions permission on the target text channel`);
+    return;
+  }
+  
+  // Sanity check: If the text channel is visible to all, the bot will do nothing
+  if ((voiceChannel.guild.roles.everyone.permissionsIn(textChannel).bitfield & Permissions.FLAGS.VIEW_CHANNEL) > 0) {
+    messageChannel.send("```" + `fix
+#${textChannel.name} is visible to @everyone.
+The channel will not show/hide unless it is hidden by default, allowing the bot to grant access after joining voice channel '${voiceChannel.name}'.
+We recommend removing the View Channel permission on #${textChannel.name} for all users except Moderators/Admins.` + "```");
+  } else {
+    // Sanity check: If the text and voice channels have identical permissions, the bot will do nothing
+    var textChannelPermissions = rolePermissionsForChannel(textChannel);
+    var voiceChannelPermissions = rolePermissionsForChannel(voiceChannel)
+    
+    if (textChannelPermissions.difference(voiceChannelPermissions).size == 0) {
+      messageChannel.send("```" + `fix
+All roles that can see #${textChannel.name} can already see '${voiceChannel.name}'
+This may indicate that the channel will not be hidden before users join, preventing the bot from performing its task.
+We recommend removing the View Channel permission on #${textChannel.name} for all users except Moderators/Admins.` + "```");
+    }
+  }
+  
+  var docRef = db.collection(voiceChannel.guild.id).doc(voiceChannel.id);
+  docRef.set({
+    'voiceChannelId': voiceChannel.id,
+    'textChannelId': textChannel.id,
+    'guildId': voiceChannel.guild.id,
+  }).then(() => replyFunc(`Mapping voice channel <#${voiceChannel.id}> -> <#${textChannel.id}>`));
+}
+
 module.exports = {
   name: 'add',
   execute(msg, args) {
@@ -28,7 +68,7 @@ module.exports = {
     
     var voiceChannel = msg.guild.channels.resolve(voiceId)
     if (!voiceChannel || !voiceChannel.isVoice()) {
-      msg.channel.send(`Channel '${voiceId}' is not a voice channel (type: ${voiceChannel?.type})`);
+      msg.channel.send(`Channel <#${voiceId}> is not a voice channel (type: ${voiceChannel?.type})`);
       return;
     }
     
@@ -37,45 +77,13 @@ module.exports = {
       msg.channel.send(`Channel <#${textId}> (${textId}) is not a text channel (type: ${textChannel?.type})`);
       return;
     }
-    
-    if (!textChannel.viewable) {
-      msg.channel.send(`I am missing 'View Channel' permissions on <#${textId}>.`);
-      return;
-    }
-    
-    // Check for Manage Channels permission
-    var bitfield = msg.guild.me.permissionsIn(textChannel).bitfield
-    if ((bitfield & Permissions.FLAGS.MANAGE_ROLES) == 0) {
-      msg.channel.send(`Bot must have the Manage Permissions permission on the target text channel`);
-      return;
-    }
-    
-    // Sanity check: If the text channel is visible to all, the bot will do nothing
-    if ((msg.guild.roles.everyone.permissionsIn(textChannel).bitfield & Permissions.FLAGS.VIEW_CHANNEL) > 0) {
-      msg.channel.send("```" + `fix
-  #${textChannel.name} is visible to @everyone.
-  The channel will not show/hide unless it is hidden by default, allowing the bot to grant access after joining voice channel '${voiceChannel.name}'.
-  We recommend removing the View Channel permission on #${textChannel.name} for all users except Moderators/Admins.` + "```");
-    } else {
-      // Sanity check: If the text and voice channels have identical permissions, the bot will do nothing
-      var textChannelPermissions = rolePermissionsForChannel(textChannel);
-      var voiceChannelPermissions = rolePermissionsForChannel(voiceChannel)
-      
-      if (textChannelPermissions.difference(voiceChannelPermissions).size == 0) {
-        msg.channel.send("```" + `fix
-  All roles that can see #${textChannel.name} can already see '${voiceChannel.name}'
-  This may indicate that the channel will not be hidden before users join, preventing the bot from performing its task.
-  We recommend removing the View Channel permission on #${textChannel.name} for all users except Moderators/Admins.` + "```");
-      }
-    }
-    
-    var docRef = db.collection(msg.guild.id).doc(voiceId);
-    docRef.set({
-      'voiceChannelId': voiceId,
-      'textChannelId': textId,
-      'guildId': msg.guild.id,
-    }).then(() => msg.channel.send(`Mapping voice channel '${voiceChannel.name}' -> <#${textId}>`));
+   
+    mapChannels(voiceChannel, textChannel, msg.channel, msg.channel.send);
   },
   executeInteraction: async(interaction, client) => {
+    var voiceChannel = interaction.options.getChannel('voice');
+    var textChannel = interaction.options.getChannel('text');
+    
+    mapChannels(voiceChannel, textChannel, interaction.channel, msg => interaction.editReply({ content: msg }));
   }
 };
