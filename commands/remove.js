@@ -14,7 +14,7 @@ module.exports = {
       .then(() => msg.channel.send(`Removing channel map for '<#${voiceId}>'`));
   },
   executeInteraction: async(interaction, client) => {
-    var targetChannel = interaction.options.getChannel('channel');
+    var targetChannel = interaction.options.getChannel('voice');
     var voiceId = targetChannel.id;
     db.collection(interaction.guild.id).doc(voiceId)
       .delete()
