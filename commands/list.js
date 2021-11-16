@@ -12,7 +12,7 @@ module.exports = {
           return
         }
         
-        msg.channel.send('Currently mapped channels:');
+        msg.channel.send( '__**Currently mapped channels**__');
         docs.forEach(doc => {
           doc.get().then(d => {
             var voiceChannelId = d.get('voiceChannelId');
@@ -31,7 +31,7 @@ module.exports = {
           return;
         }
         
-        interaction.editReply({ content: 'Currently mapped channels:' });
+        interaction.editReply({ content: '__**Currently mapped channels**__' });
         docs.forEach(doc => {
           doc.get().then(d => {
             var voiceChannelId = d.get('voiceChannelId');

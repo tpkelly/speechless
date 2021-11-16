@@ -1,16 +1,18 @@
 const { Permissions } = require('discord.js');
+const common = require('../common.js');
 
 function printSupport(guild, targetChannel, prefix) {
-  var supportMessage = `== Speechless support ==
-Commands must be run by users with the Manage Channels permission.
-Any users with a role giving them 'View Channel' on the text channel will be unaffected.
-This can be set to a Moderator role to still moderate the channel without having to be in the voice call at the time.
-Text channel will need to have permissions for regular users removed to allow the bot to show the channel to them when they join the related Voice channel.
+  var supportMessage = 
+`• Commands must be run by users with the Manage Channels permission.
+• Any users with a role giving them 'View Channel' on the text channel will be unaffected.
+• This can be set to a Moderator role to still moderate the channel without having to be in the voice call at the time.
+• Text channel will need to have permissions for regular users removed to allow the bot to show the channel to them when they join the related Voice channel.
 
 **Support**: <https://discord.gg/yb287x2ZnW>
 **Github**:  <https://github.com/tpkelly/speechless>
 
-Bot Permissions Check:`;
+__Bot Permissions Check__
+`;
 
   if (targetChannel) {
     var textChannelPermissions = guild.me.permissionsIn(targetChannel).bitfield;
@@ -38,7 +40,7 @@ ${hasManageChannels ? ':white_check_mark:' : ':no_entry_sign:'} Manage Channels 
 To check a specific channel, again with /${prefix}support <channel>`;
   }
 
-  return supportMessage;
+  return common.styledEmbed('Speechless Support', supportMessage);
 }
 
 module.exports = {
@@ -55,10 +57,10 @@ module.exports = {
       textChannel = msg.guild.channels.resolve(targetChannel)
     }
     
-    msg.channel.send(printSupport(msg.guild, textChannel, 'sl.'));
+    msg.channel.send({ embeds: [printSupport(msg.guild, textChannel, 'sl.')] });
   },
   executeInteraction: async(interaction, client) => {
     var targetChannel = interaction.options.getChannel('targetchannel');
-    interaction.editReply({ content: printSupport(interaction.guild, targetChannel, '') });
+    interaction.editReply({ embeds: [printSupport(interaction.guild, targetChannel, '')] });
   }
 };

@@ -29,6 +29,7 @@ module.exports = {
     
     // Execute command by name from the 'commands/{command.name}.js' file
     try {
+      msg.channel.send(`**Did you know we now have slash commands? Type "/" to see an autocomplete list of all commands. They are much easier to use than remembering all the bot commands!**`)
       messageCommand.execute(msg, args);
     } catch (ex) {
       console.error(ex);
