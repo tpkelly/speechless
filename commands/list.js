@@ -17,7 +17,8 @@ module.exports = {
           doc.get().then(d => {
             var voiceChannelId = d.get('voiceChannelId');
             var textChannelId = d.get('textChannelId');
-            msg.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}>`)
+            var readonly = d.get('readonly') ? '(readonly)' : '';
+            msg.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}> ${readonly}`)
           })
         })
       });
@@ -36,7 +37,8 @@ module.exports = {
           doc.get().then(d => {
             var voiceChannelId = d.get('voiceChannelId');
             var textChannelId = d.get('textChannelId');
-            interaction.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}>`)
+            var readonly = d.get('readonly') ? '(readonly)' : '';
+            interaction.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}> ${readonly}`)
           })
         })
       });

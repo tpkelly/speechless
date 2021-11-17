@@ -12,7 +12,7 @@ function rolePermissionsForChannel(channel) {
     .filter(p => p == true)
 }
 
-function mapChannels(voiceChannel, textChannel, messageChannel, replyFunc) {
+function mapChannels(voiceChannel, textChannel, messageChannel, isReadonly, replyFunc) {
   if (!textChannel.viewable) {
     replyFunc(`I am missing 'View Channel' permissions on <#${textId}>.`);
     return;
@@ -44,12 +44,18 @@ We recommend removing the View Channel permission on #${textChannel.name} for al
     }
   }
   
-  var docRef = db.collection(voiceChannel.guild.id).doc(voiceChannel.id);
-  docRef.set({
+  var docToAdd = {
     'voiceChannelId': voiceChannel.id,
     'textChannelId': textChannel.id,
     'guildId': voiceChannel.guild.id,
-  }).then(() => replyFunc(`Mapping voice channel <#${voiceChannel.id}> -> <#${textChannel.id}>`));
+  };
+  
+  if (isReadonly) {
+    docToAdd['readonly'] = true;
+  }
+  
+  var docRef = db.collection(voiceChannel.guild.id).doc(voiceChannel.id);
+  docRef.set(docToAdd).then(() => replyFunc(`Mapping ${isReadonly ? 'readonly ' : ''}voice channel <#${voiceChannel.id}> -> <#${textChannel.id}>`));
 }
 
 module.exports = {
@@ -78,12 +84,13 @@ module.exports = {
       return;
     }
    
-    mapChannels(voiceChannel, textChannel, msg.channel, msg.channel.send);
+    mapChannels(voiceChannel, textChannel, msg.channel, false, msg.channel.send);
   },
   executeInteraction: async(interaction, client) => {
     var voiceChannel = interaction.options.getChannel('voice');
     var textChannel = interaction.options.getChannel('text');
+    var isReadonly = interaction.options.getBoolean('readonly');
     
-    mapChannels(voiceChannel, textChannel, interaction.channel, msg => interaction.editReply({ content: msg }));
+    mapChannels(voiceChannel, textChannel, interaction.channel, isReadonly, msg => interaction.editReply({ content: msg }));
   }
 };

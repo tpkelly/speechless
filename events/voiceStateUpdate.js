@@ -2,11 +2,11 @@ const { Permissions } = require('discord.js');
 const admin = require('firebase-admin');
 const db = admin.firestore();
 
-function allowUserChannelAccess(guild, channelId, userId) {
-  var noVoiceChannel = guild.channels.resolve(noVoiceChannelId)
+function allowUserChannelAccess(guild, channelId, userId, allowSendMessages) {
+  var noVoiceChannel = guild.channels.resolve(channelId)
   var permission = {
     'VIEW_CHANNEL': true,
-    'SEND_MESSAGES': true,
+    'SEND_MESSAGES': allowSendMessages,
     'READ_MESSAGE_HISTORY': true
   };
 
@@ -45,7 +45,7 @@ module.exports = {
       var noVoiceChannelId = await db.collection(newState.guild.id).doc(newState.channelId).get();
       if (noVoiceChannelId.exists) {
         var data = noVoiceChannelId.data()
-        allowUserChannelAccess(newState.guild, data.textChannelId, newState.id)
+        allowUserChannelAccess(newState.guild, data.textChannelId, newState.id, !data.readonly)
       }
     }
   }
