@@ -1,46 +1,36 @@
 const admin = require('firebase-admin');
 const db = admin.firestore();
 
+async function printList(guildId, replyFunc) {
+    return await db.collection(guildId)
+      .listDocuments()
+      .then(async docs => {
+        if (docs.length == 0) {
+          return 'No channel mappings configured';
+        }
+        
+        var message = '__**Currently mapped channels**__';
+        for (var doc of docs) {
+           await doc.get().then(d => {
+            var voiceChannelId = d.get('voiceChannelId');
+            var textChannelId = d.get('textChannelId');
+            var readonly = d.get('readonly') ? '(readonly)' : '';
+            message += `\n🔊 <#${voiceChannelId}>: <#${textChannelId}> ${readonly}`;
+          })
+        }
+        
+        return message;
+      });
+
+}
+
+
 module.exports = {
   name: 'list',
-  execute(msg, args) {
-    db.collection(msg.guild.id)
-      .listDocuments()
-      .then(docs => {
-        if (docs.length == 0) {
-          msg.channel.send('No channel mappings configured');
-          return
-        }
-        
-        msg.channel.send( '__**Currently mapped channels**__');
-        docs.forEach(doc => {
-          doc.get().then(d => {
-            var voiceChannelId = d.get('voiceChannelId');
-            var textChannelId = d.get('textChannelId');
-            var readonly = d.get('readonly') ? '(readonly)' : '';
-            msg.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}> ${readonly}`)
-          })
-        })
-      });
+  execute: async (msg, args) => {
+    msg.channel.send(await printList(msg.guild.id));
   },
-  executeInteraction: async(interaction, client) => {
-    db.collection(interaction.guild.id)
-      .listDocuments()
-      .then(docs => {
-        if (docs.length == 0) {
-          interaction.editReply('No channel mappings configured');
-          return;
-        }
-        
-        interaction.editReply({ content: '__**Currently mapped channels**__' });
-        docs.forEach(doc => {
-          doc.get().then(d => {
-            var voiceChannelId = d.get('voiceChannelId');
-            var textChannelId = d.get('textChannelId');
-            var readonly = d.get('readonly') ? '(readonly)' : '';
-            interaction.channel.send(`🔊 <#${voiceChannelId}>: <#${textChannelId}> ${readonly}`)
-          })
-        })
-      });
+  executeInteraction: async (interaction, client) => {
+    interaction.editReply(await printList(interaction.guild.id));
   }
 };

@@ -14,7 +14,7 @@ function rolePermissionsForChannel(channel) {
 
 function mapChannels(voiceChannel, textChannel, messageChannel, isReadonly, replyFunc) {
   if (!textChannel.viewable) {
-    replyFunc(`I am missing 'View Channel' permissions on <#${textId}>.`);
+    replyFunc(`I am missing 'View Channel' permissions on <#${textChannel.id}>.`);
     return;
   }
   
