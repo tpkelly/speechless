@@ -1,0 +1,60 @@
+[
+    {
+        "name": "support",
+        "description": "Details about Speechless' permissions and support server",
+        "options": [
+            {
+                "type": 7,
+                "name": "targetchannel",
+                "description": "An optional text channel to check the permissions for, otherwise checks server permissions",
+                "channel_types": [ 0 ]
+            }
+        ]
+    },
+    {
+        "name": "help",
+        "description": "Display help information about how to use this bot"
+    },
+    {
+        "name": "list",
+        "description": "List all currently configured channels"
+    },
+    {
+        "name": "add",
+        "description": "Add a new mapping for a voice channel to a hidden text channel",
+        "options": [
+            {
+                "type": 7,
+                "name": "voice",
+                "description": "The voice channel to enable this feature for, when a user joins this voice call",
+                "required": true,
+                "channel_types": [ 2 ]
+            },
+            {
+                "type": 7,
+                "name": "text",
+                "description": "The text channel to reveal when the user joins the voice call",
+                "required": true,
+                "channel_types": [ 0 ]
+            },
+            {
+                "type": 5,
+                "name": "readonly",
+                "description": "Whether the associated text channel should include 'Send Messages'. Defaults to true if not provided"
+            }
+        ]
+    },
+    {
+        "name": "remove",
+        "description": "Remove all mappings for a given voice channel",
+        "options": [
+            {
+                "type": 7,
+                "name": "voice",
+                "description": "The voice channel to remove all mappings for",
+                "required": true,
+                "channel_types": [ 2 ]
+            }
+        ]
+    }
+]
