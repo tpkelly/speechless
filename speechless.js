@@ -12,7 +12,7 @@ admin.initializeApp({
 });
 
 client.on('ready', () => {
-  client.user.setActivity("/sl.help to get started");
+  client.user.setActivity("/help to get started");
   
   // Register commands
   client.commands = new Collection();
